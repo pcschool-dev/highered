@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบข้อมูลการศึกษาต่อ ม.6 | งานแนะแนว โรงเรียนปากช่อง</title>
+    <!-- ติดตั้งเป็นแอป (PWA) — ไฟล์กลางของทีม DSDS /dsds/pwa.js ; manifest + sw.js อยู่ข้างหน้านี้ -->
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="apple-touch-icon" href="/dsds/pwa/apple-touch-icon.png">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="ข้อมูลศึกษาต่อ">
+    <script src="/dsds/pwa.js" data-title="ข้อมูลศึกษาต่อ" defer></script>
+    <!-- หน้าเตือนเปิดจากแอป Facebook/Instagram/Messenger (ไฟล์กลางของทีม DSDS) -->
+    <script src="https://pcschool-dev.github.io/dsds/fbgate.js"></script>
+    <link rel="icon" type="image/png" href="Logo.png">
+    <link rel="preconnect" href="https://script.google.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #faf7f2; }
+        iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: none; }
+        /* หน้าโหลด — โทนเลือดหมู-ทอง ชุดเดียวกับหน้าเตือน fbgate */
+        #loading { position: fixed; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center;
+                   gap: 14px; background: #faf7f2; font-family: 'Sarabun', sans-serif; color: #5a1520; transition: opacity .45s ease; }
+        #loading .ring { position: relative; width: 104px; height: 104px; }
+        #loading .ring img { position: absolute; inset: 14px; width: 76px; height: 76px; object-fit: contain; }
+        #loading .ring:before { content: ''; position: absolute; inset: 0; border-radius: 50%;
+                   border: 3px solid #ecd29c; border-top-color: #7a1f2b; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        #loading h1 { margin: 6px 0 0; font-size: 19px; font-weight: 600; text-align: center; padding: 0 20px; line-height: 1.5; }
+        #loading p { margin: 0; color: #8a6414; font-size: 14px; }
+        #directLink { display: none; margin-top: 6px; color: #7a1f2b; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div id="loading">
+        <div class="ring"><img src="Logo.png" alt=""></div>
+        <h1>ระบบข้อมูลการศึกษาต่อ ม.6</h1>
+        <p>กำลังโหลด…</p>
+        <a id="directLink" href="#" target="_top">ถ้าหน้าไม่แสดง แตะที่นี่เพื่อเปิดโดยตรง</a>
+    </div>
+    <iframe id="app" title="ระบบข้อมูลการศึกษาต่อ ม.6" allow="clipboard-write"></iframe>
+
+    <script>
+        // URL /exec ของ Apps Script (deployment เดิมตลอด — deploy รุ่นใหม่ไม่ต้องแก้ไฟล์นี้)
+        var APP_URL = 'https://script.google.com/a/macros/pcschool.ac.th/s/AKfycbxEFouCPHABqe3Xa-U8yRCUuAhsU2tUmnrGGx6_Ua2lhIMegMyUfb8cgAroYrmfSdm6/exec';
+        var loader = document.getElementById('loading'), frame = document.getElementById('app'), direct = document.getElementById('directLink');
+
+        // ส่ง query ที่ติดมาต่อให้แอป (ตัด t / fbclid / openExternalBrowser ที่เป็นของหน้านี้หรือของแอปแชท)
+        var q = new URLSearchParams(location.search);
+        ['t', 'fbclid', 'openExternalBrowser', 'fbgate', 'fbtheme'].forEach(function (k) { q.delete(k); });
+        var extra = q.toString();
+        var url = APP_URL + '?' + (extra ? extra + '&' : '') + 't=' + Date.now();
+        // กลับจากบัญชีกลาง (?ticket=&state=) → ส่งต่อให้แอปแล้วลบออกจากแถบที่อยู่ กดรีเฟรชจะได้ไม่ใช้ตั๋วเดิมซ้ำ
+        if (q.has('ticket')) {
+            var keep = new URLSearchParams(location.search);
+            ['ticket', 'state', 'error'].forEach(function (k) { keep.delete(k); });
+            try { history.replaceState(null, '', location.pathname + (keep.toString() ? '?' + keep.toString() : '') + location.hash); } catch (e) { }
+        }
+
+        if (window.DSDSFbGate && DSDSFbGate.blocked) {
+            // เปิดในแอป Facebook -> fbgate.js ขึ้นหน้าเตือนแล้ว ไม่ต้องโหลดระบบ (ในแอป Facebook ขึ้นหน้าขาว)
+            loader.style.display = 'none';
+        } else {
+            var settled = false, t0 = Date.now();
+            frame.onload = function () {
+                if (settled) return;
+                settled = true; clearTimeout(fallback);
+                // โชว์หน้าโหลดอย่างน้อย 500ms กันกะพริบ
+                setTimeout(function () {
+                    frame.style.display = 'block';
+                    loader.style.opacity = '0';
+                    setTimeout(function () { loader.style.display = 'none'; }, 450);
+                }, Math.max(0, 500 - (Date.now() - t0)));
+            };
+            // ฝังในกรอบไม่ได้ (เช่น Google พาไปหน้าเข้าสู่ระบบที่ห้ามฝัง) -> เปิด /exec เต็มแท็บแทน
+            var fallback = setTimeout(function () {
+                if (settled) return;
+                settled = true; location.replace(url);
+            }, 12000);
+            direct.href = url;
+            setTimeout(function () { if (!settled) direct.style.display = 'inline'; }, 4000);
+            frame.src = url;
+        }
+    </script>
+</body>
+</html>
