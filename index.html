@@ -14,7 +14,7 @@
     <!-- หน้าเตือนเปิดจากแอป Facebook/Instagram/Messenger (ไฟล์กลางของทีม DSDS) -->
     <script src="https://pcschool-dev.github.io/dsds/fbgate.js"></script>
     <link rel="icon" type="image/png" href="Logo.png">
-    <link rel="preconnect" href="https://script.google.com">
+    <link rel="preconnect" href="https://asia-southeast1-pcguide-data.cloudfunctions.net">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
     <style>
         html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #faf7f2; }
@@ -42,8 +42,9 @@
     <iframe id="app" title="ระบบข้อมูลการศึกษาต่อ ม.6" allow="clipboard-write"></iframe>
 
     <script>
-        // URL /exec ของ Apps Script (deployment เดิมตลอด — deploy รุ่นใหม่ไม่ต้องแก้ไฟล์นี้)
-        var APP_URL = 'https://script.google.com/a/macros/pcschool.ac.th/s/AKfycbxEFouCPHABqe3Xa-U8yRCUuAhsU2tUmnrGGx6_Ua2lhIMegMyUfb8cgAroYrmfSdm6/exec';
+        // ชี้เซิร์ฟเวอร์ Firebase (guidance-cloud, โปรเจกต์ pcguide-data) ตั้งแต่ 3 พ.ย. 2569 — ดู guidance-cloud/README.md
+        // ถอยกลับ: ใส่ /exec เดิมของ Apps Script คืน = https://script.google.com/a/macros/pcschool.ac.th/s/AKfycbxEFouCPHABqe3Xa-U8yRCUuAhsU2tUmnrGGx6_Ua2lhIMegMyUfb8cgAroYrmfSdm6/exec
+        var APP_URL = 'https://asia-southeast1-pcguide-data.cloudfunctions.net/api/highered/exec';
         var loader = document.getElementById('loading'), frame = document.getElementById('app'), direct = document.getElementById('directLink');
 
         // ส่ง query ที่ติดมาต่อให้แอป (ตัด t / fbclid / openExternalBrowser ที่เป็นของหน้านี้หรือของแอปแชท)
